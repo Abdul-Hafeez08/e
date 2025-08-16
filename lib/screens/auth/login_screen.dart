@@ -7,6 +7,7 @@ import 'package:e/services/auth_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/utils/validators.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
@@ -79,102 +80,274 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(kDefaultPadding),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo
-                  const Icon(
-                    Icons.shopping_bag,
-                    size: 80,
-                    color: kPrimaryColor,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              kPrimaryColor.withOpacity(0.1),
+              kBackgroundColor,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(kDefaultPadding),
+              child: AnimationLimiter(
+                child: Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(kDefaultBorderRadius * 1.5),
                   ),
-                  const SizedBox(height: kSmallPadding),
-                  Text(
-                    kAppName,
-                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.bold,
+                  child: Padding(
+                    padding: const EdgeInsets.all(kDefaultPadding * 1.5),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: AnimationConfiguration.toStaggeredList(
+                          duration: const Duration(milliseconds: 375),
+                          childAnimationBuilder: (widget) => SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(child: widget),
+                          ),
+                          children: [
+                            // Logo
+                            const Icon(
+                              Icons.shopping_bag,
+                              size: 80,
+                              color: kPrimaryColor,
+                            ),
+                            const SizedBox(height: kSmallPadding),
+                            Text(
+                              kAppName,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge!
+                                  .copyWith(
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: kLargePadding * 2),
+                            // Email Field
+                            TextFormField(
+                              controller: _emailController,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                prefixIcon: const Icon(Icons.email,
+                                    color: kPrimaryColor),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      kDefaultBorderRadius),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      kDefaultBorderRadius),
+                                  borderSide: BorderSide(
+                                      color: kBorderColor.withOpacity(0.5)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      kDefaultBorderRadius),
+                                  borderSide: const BorderSide(
+                                      color: kPrimaryColor, width: 2),
+                                ),
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: Validators.validateEmail,
+                            ),
+                            const SizedBox(height: kDefaultPadding),
+                            // Password Field
+                            TextFormField(
+                              controller: _passwordController,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon: const Icon(Icons.lock,
+                                    color: kPrimaryColor),
+                                suffixIcon: IconButton(
+                                  icon: AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 200),
+                                    child: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      key: ValueKey<bool>(_obscurePassword),
+                                      color: kTextColorSecondary,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      kDefaultBorderRadius),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      kDefaultBorderRadius),
+                                  borderSide: BorderSide(
+                                      color: kBorderColor.withOpacity(0.5)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      kDefaultBorderRadius),
+                                  borderSide: const BorderSide(
+                                      color: kPrimaryColor, width: 2),
+                                ),
+                              ),
+                              obscureText: _obscurePassword,
+                              validator: Validators.validatePassword,
+                            ),
+                            const SizedBox(height: kLargePadding),
+                            // Login Button
+                            _isLoading
+                                ? const CircularProgressIndicator(
+                                    color: kPrimaryColor)
+                                : AnimatedScaleButton(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            kPrimaryColor,
+                                            kPrimaryColor.withOpacity(0.8)
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                            kDefaultBorderRadius),
+                                      ),
+                                      child: ElevatedButton(
+                                        onPressed: _login,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                kDefaultBorderRadius),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 16,
+                                            horizontal: 32,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Login',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                            const SizedBox(height: kDefaultPadding),
+                            // Signup Link
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, SignupScreen.routeName);
+                              },
+                              child: Text(
+                                'Don’t have an account? Sign Up',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      color: kPrimaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                            // Requests Link
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, RequestApprovalScreen.routeName);
+                              },
+                              child: Text(
+                                'View Requests',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      color: kPrimaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                          ],
                         ),
-                  ),
-                  const SizedBox(height: kLargePadding * 2),
-                  // Email Field
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email, color: kPrimaryColor),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: Validators.validateEmail,
-                  ),
-                  const SizedBox(height: kDefaultPadding),
-                  // Password Field
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock, color: kPrimaryColor),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: kTextColorSecondary,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
                       ),
                     ),
-                    obscureText: _obscurePassword,
-                    validator: Validators.validatePassword,
                   ),
-                  const SizedBox(height: kLargePadding),
-                  // Login Button
-                  _isLoading
-                      ? const CircularProgressIndicator(color: kPrimaryColor)
-                      : ElevatedButton(
-                          onPressed: _login,
-                          child: const Text('Login'),
-                        ),
-                  const SizedBox(height: kDefaultPadding),
-                  // Signup Link
-
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, SignupScreen.routeName);
-                    },
-                    child: const Text(
-                      'Don’t have an account? Sign Up',
-                      style: TextStyle(color: kPrimaryColor),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                          context, RequestApprovalScreen.routeName);
-                    },
-                    child: const Text(
-                      'Requests',
-                      style: TextStyle(color: kPrimaryColor),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// Custom widget for button tap animation
+class AnimatedScaleButton extends StatefulWidget {
+  final Widget child;
+
+  const AnimatedScaleButton({super.key, required this.child});
+
+  @override
+  State<AnimatedScaleButton> createState() => _AnimatedScaleButtonState();
+}
+
+class _AnimatedScaleButtonState extends State<AnimatedScaleButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: widget.child,
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:e/routes.dart';
 import 'package:e/screens/auth/login_screen.dart';
 import 'package:e/screens/buyer/home_screen.dart';
 import 'package:e/screens/seller/request_screen.dart';
+import 'package:e/screens/seller/seller_dashboard_screen.dart';
 import 'package:e/services/auth_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,7 +25,7 @@ class EcommerceApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'E-commerce App',
+      title: 'Fresh Cart',
       theme: ThemeData(
         primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: kBackgroundColor,
@@ -119,7 +120,12 @@ class _SplashScreenState extends State<SplashScreen> {
         if (userData['role'] == 'buyer') {
           Navigator.pushReplacementNamed(context, HomeScreen.routeName);
         } else if (userData['role'] == 'seller') {
-          Navigator.pushReplacementNamed(context, RequestScreen.routeName);
+          if (userData['shopId'] != null && userData['shopId'].isNotEmpty) {
+            Navigator.pushReplacementNamed(
+                context, SellerDashboardScreen.routeName);
+          } else {
+            Navigator.pushReplacementNamed(context, RequestScreen.routeName);
+          }
         } else {
           Navigator.pushReplacementNamed(context, LoginScreen.routeName);
         }

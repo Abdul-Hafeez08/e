@@ -7,6 +7,7 @@ import 'package:e/screens/buyer/home_screen.dart';
 import 'package:e/screens/buyer/product_detail_screen.dart';
 import 'package:e/screens/buyer/product_list_screen.dart';
 import 'package:e/screens/seller/product_upload_screen.dart';
+import 'package:e/screens/seller/product_edit_screen.dart';
 import 'package:e/screens/seller/request_screen.dart';
 import 'package:e/screens/seller/seller_dashboard_screen.dart';
 import 'package:e/screens/seller/shop_setup_screen.dart';
@@ -49,6 +50,13 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const SellerDashboardScreen());
       case RequestApprovalScreen.routeName:
         return MaterialPageRoute(builder: (_) => const RequestApprovalScreen());
+      case ProductEditScreen.routeName:
+        if (args is ProductModel) {
+          return MaterialPageRoute(
+            builder: (_) => ProductEditScreen(product: args),
+          );
+        }
+        return _errorRoute();
       default:
         return _errorRoute();
     }

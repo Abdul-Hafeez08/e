@@ -7,6 +7,7 @@ import 'package:e/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -20,6 +21,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   String _selectedCategory = kProductCategories.first;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
           kAppName,
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                 color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
         ),
         backgroundColor: kPrimaryColor,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
@@ -43,36 +53,121 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Category Filter
+          // Welcome Header
           Container(
-            padding: const EdgeInsets.all(kDefaultPadding),
-            color: kBackgroundColor,
-            child: DropdownButtonFormField<String>(
-              value: _selectedCategory,
-              decoration: const InputDecoration(
-                labelText: 'Select Category',
-                border: OutlineInputBorder(),
+            padding: const EdgeInsets.fromLTRB(
+                kDefaultPadding, kLargePadding, kDefaultPadding, kSmallPadding),
+            decoration: BoxDecoration(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Discover Products',
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        color: kTextColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: kSmallPadding),
+                Text(
+                  'Explore our collection',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: kTextColorSecondary,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search products...',
+                prefixIcon: const Icon(Icons.search, color: kPrimaryColor),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(kDefaultBorderRadius),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(kDefaultBorderRadius),
+                  borderSide: BorderSide(color: kBorderColor.withOpacity(0.5)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(kDefaultBorderRadius),
+                  borderSide: const BorderSide(color: kPrimaryColor, width: 2),
+                ),
               ),
-              items: kProductCategories
-                  .map((category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      ))
-                  .toList(),
               onChanged: (value) {
-                setState(() {
-                  _selectedCategory = value!;
-                });
-                Navigator.pushNamed(
-                  context,
-                  ProductListScreen.routeName,
-                  arguments: value,
+                setState(() {}); // Trigger rebuild to filter products
+              },
+            ),
+          ),
+          // Category Scroller
+          Container(
+            height: 60,
+            padding: const EdgeInsets.symmetric(
+                vertical: kSmallPadding, horizontal: kDefaultPadding),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: kProductCategories.length,
+              itemBuilder: (context, index) {
+                final category = kProductCategories[index];
+                final isSelected = _selectedCategory == category;
+                return Padding(
+                  padding: const EdgeInsets.only(right: kSmallPadding),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedCategory = category;
+                      });
+                      Navigator.pushNamed(
+                        context,
+                        ProductListScreen.routeName,
+                        arguments: category,
+                      );
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding, vertical: kSmallPadding),
+                      decoration: BoxDecoration(
+                        color: isSelected ? kPrimaryColor : Colors.white,
+                        borderRadius:
+                            BorderRadius.circular(kDefaultBorderRadius),
+                        border: Border.all(
+                          color: isSelected ? kPrimaryColor : kBorderColor,
+                        ),
+                        boxShadow: [
+                          if (isSelected)
+                            BoxShadow(
+                              color: kPrimaryColor.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                        ],
+                      ),
+                      child: Text(
+                        category,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : kTextColor,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
           ),
-          // Product List
+          // Product Grid
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _firestoreService.getProductsStream(),
@@ -100,30 +195,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 final products = snapshot.data!.docs
                     .map((doc) => ProductModel.fromSnapshot(doc))
+                    .toList()
+                    .where((product) => product.name
+                        .toLowerCase()
+                        .contains(_searchController.text.toLowerCase()))
                     .toList();
 
-                return GridView.builder(
-                  padding: const EdgeInsets.all(kDefaultPadding),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: kDefaultPadding,
-                    mainAxisSpacing: kDefaultPadding,
-                    childAspectRatio: 0.75,
+                return AnimationLimiter(
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(kDefaultPadding),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: kDefaultPadding,
+                      mainAxisSpacing: kDefaultPadding,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return AnimationConfiguration.staggeredGrid(
+                        position: index,
+                        duration: const Duration(milliseconds: 375),
+                        columnCount: 2,
+                        child: ScaleAnimation(
+                          child: FadeInAnimation(
+                            child: Hero(
+                              tag: 'product_${product.id}',
+                              child: ProductCard(
+                                product: product,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    ProductDetailScreen.routeName,
+                                    arguments: product,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    return ProductCard(
-                      product: product,
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          ProductDetailScreen.routeName,
-                          arguments: product,
-                        );
-                      },
-                    );
-                  },
                 );
               },
             ),

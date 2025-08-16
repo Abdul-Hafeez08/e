@@ -8,6 +8,7 @@ class ProductModel {
   final String category;
   final String description;
   final String shopId;
+  final String sellerId; // Add sellerId
   final String imageUrl;
 
   ProductModel({
@@ -17,10 +18,10 @@ class ProductModel {
     required this.category,
     required this.description,
     required this.shopId,
+    required this.sellerId, // Add sellerId
     required this.imageUrl,
   });
 
-  // Convert ProductModel to Firestore document
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -28,11 +29,11 @@ class ProductModel {
       'category': category,
       'description': description,
       'shopId': shopId,
+      'sellerId': sellerId, // Add sellerId
       'imageUrl': imageUrl,
     };
   }
 
-  // Create ProductModel from Firestore document
   factory ProductModel.fromMap(String id, Map<String, dynamic> map) {
     return ProductModel(
       id: id,
@@ -41,17 +42,16 @@ class ProductModel {
       category: map['category'] ?? '',
       description: map['description'] ?? '',
       shopId: map['shopId'] ?? '',
+      sellerId: map['sellerId'] ?? '', // Add sellerId
       imageUrl: map['imageUrl'] ?? kDefaultImageUrl,
     );
   }
 
-  // Create ProductModel from Firestore snapshot
   factory ProductModel.fromSnapshot(DocumentSnapshot snapshot) {
     return ProductModel.fromMap(
         snapshot.id, snapshot.data() as Map<String, dynamic>);
   }
 
-  // Validate category
   bool isValidCategory() {
     return kProductCategories.contains(category);
   }

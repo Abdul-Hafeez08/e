@@ -1,24 +1,26 @@
 import 'dart:io';
+import 'package:e/models/product_model.dart';
 import 'package:e/screens/seller/seller_dashboard_screen.dart';
 import 'package:e/services/firestore_service.dart';
 import 'package:e/services/storage_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/utils/validators.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
-class ProductUploadScreen extends StatefulWidget {
-  static const String routeName = '/product-upload';
+class ProductEditScreen extends StatefulWidget {
+  static const String routeName = '/product-edit';
+  final ProductModel product;
 
-  const ProductUploadScreen({super.key});
+  const ProductEditScreen({super.key, required this.product});
 
   @override
-  State<ProductUploadScreen> createState() => _ProductUploadScreenState();
+  State<ProductEditScreen> createState() => _ProductEditScreenState();
 }
 
-class _ProductUploadScreenState extends State<ProductUploadScreen> {
+class _ProductEditScreenState extends State<ProductEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
@@ -28,6 +30,16 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
   String? _selectedCategory;
   File? _imageFile;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-populate fields with product data
+    _nameController.text = widget.product.name;
+    _priceController.text = widget.product.price.toString();
+    _descriptionController.text = widget.product.description;
+    _selectedCategory = widget.product.category;
+  }
 
   @override
   void dispose() {
@@ -47,8 +59,8 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
     }
   }
 
-  Future<void> _uploadProduct() async {
-    if (_formKey.currentState!.validate() && _imageFile != null) {
+  Future<void> _updateProduct() async {
+    if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -57,55 +69,81 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
         if (user == null) {
           throw Exception('No user logged in');
         }
-        final userData = await _firestoreService.getUserData(user.uid);
-        final shopId = userData?['shopId'];
-        if (shopId == null) {
-          throw Exception('No shop found for this seller');
+        String? imageUrl = widget.product.imageUrl;
+        if (_imageFile != null) {
+          imageUrl = await _storageService.uploadProductImage(
+              _imageFile!, widget.product.shopId);
         }
-
-        final imageUrl =
-            await _storageService.uploadProductImage(_imageFile!, shopId);
-        await _firestoreService.createProduct(
-          shopId: shopId,
+        await _firestoreService.updateProduct(
+          productId: widget.product.id,
+          shopId: widget.product.shopId,
           name: _nameController.text.trim(),
           price: double.parse(_priceController.text.trim()),
           category: _selectedCategory!,
           description: _descriptionController.text.trim(),
           imageUrl: imageUrl,
-          sellerId: user.uid, // Added sellerId
+          sellerId: user.uid, // Add sellerId
         );
-
         Navigator.pushNamed(
             context, SellerDashboardScreen.routeName); // Changed to pushNamed
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Product uploaded successfully!'),
+            content: const Text('Product updated successfully!'),
             backgroundColor: kPrimaryColor,
           ),
         );
       } catch (e) {
-        print('Upload error: $e'); // Added debug logging
+        print('Update error: $e'); // Add debug logging
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Failed to upload product: ${e.toString()}',
+              'Failed to update product: ${e.toString()}',
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: kErrorColor,
           ),
         );
+        print(' >>>>>>>>>$e \n\n\n');
       } finally {
         setState(() {
           _isLoading = false;
         });
       }
-    } else if (_imageFile == null) {
+    }
+  }
+
+  Future<void> _deleteProduct() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      print(
+          'Deleting product: ${widget.product.id}, shop: ${widget.product.shopId}'); // Add debug logging
+      await _firestoreService.deleteProduct(
+          widget.product.id, widget.product.shopId);
+      Navigator.pushNamed(
+          context, SellerDashboardScreen.routeName); // Changed to pushNamed
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select an image'),
+        SnackBar(
+          content: const Text('Product deleted successfully!'),
+          backgroundColor: kPrimaryColor,
+        ),
+      );
+    } catch (e) {
+      print('Delete error: $e'); // Add debug logging
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to delete product: ${e.toString()}',
+            style: const TextStyle(color: Colors.white),
+          ),
           backgroundColor: kErrorColor,
         ),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -115,7 +153,7 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Upload Product',
+          'Edit Product',
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -162,7 +200,7 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
                       children: [
                         // Title
                         Text(
-                          'Add New Product',
+                          'Edit Your Product',
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
@@ -172,8 +210,9 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
                               ),
                         ),
                         const SizedBox(height: kSmallPadding),
+                        // Subtitle
                         Text(
-                          'Showcase your products to buyers',
+                          'Update or delete your product details',
                           style:
                               Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     color: kTextColorSecondary,
@@ -204,12 +243,14 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
                                           image: FileImage(_imageFile!),
                                           fit: BoxFit.cover,
                                         )
-                                      : const DecorationImage(
-                                          image: NetworkImage(kDefaultImageUrl),
+                                      : DecorationImage(
+                                          image: NetworkImage(
+                                              widget.product.imageUrl),
                                           fit: BoxFit.cover,
                                         ),
                                 ),
-                                child: _imageFile == null
+                                child: _imageFile == null &&
+                                        widget.product.imageUrl.isEmpty
                                     ? const Center(
                                         child: Icon(
                                           Icons.add_a_photo,
@@ -357,51 +398,135 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
                           validator: Validators.validateDescription,
                         ),
                         const SizedBox(height: kLargePadding),
-                        // Upload Button
+                        // Update and Delete Buttons
                         _isLoading
                             ? const Center(
                                 child: CircularProgressIndicator(
                                     color: kPrimaryColor),
                               )
-                            : AnimatedScaleButton(
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        kPrimaryColor,
-                                        kPrimaryColor.withOpacity(0.8)
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
+                            : Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: AnimatedScaleButton(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              kPrimaryColor,
+                                              kPrimaryColor.withOpacity(0.8),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                              kDefaultBorderRadius),
+                                        ),
+                                        child: ElevatedButton(
+                                          onPressed: _updateProduct,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      kDefaultBorderRadius),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 16,
+                                              horizontal: 16,
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'Update Product',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                    borderRadius: BorderRadius.circular(
-                                        kDefaultBorderRadius),
                                   ),
-                                  child: ElevatedButton(
-                                    onPressed: _uploadProduct,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.transparent,
-                                      shadowColor: Colors.transparent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            kDefaultBorderRadius),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 16,
-                                        horizontal: 32,
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Upload Product',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                                  const SizedBox(width: kDefaultPadding),
+                                  Expanded(
+                                    child: AnimatedScaleButton(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              kErrorColor,
+                                              kErrorColor.withOpacity(0.8),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                              kDefaultBorderRadius),
+                                        ),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: const Text(
+                                                    'Delete Product'),
+                                                content: const Text(
+                                                  'Are you sure you want to delete this product? This action cannot be undone.',
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    child: const Text(
+                                                      'Cancel',
+                                                      style: TextStyle(
+                                                          color: kPrimaryColor),
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      _deleteProduct();
+                                                    },
+                                                    child: const Text(
+                                                      'Delete',
+                                                      style: TextStyle(
+                                                          color: kErrorColor),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      kDefaultBorderRadius),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 16,
+                                              horizontal: 16,
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'Delete Product',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
                       ],
                     ),

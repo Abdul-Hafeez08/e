@@ -1,5 +1,6 @@
 import 'package:e/models/request_model.dart';
 import 'package:e/screens/seller/shop_setup_screen.dart';
+import 'package:e/screens/seller/seller_dashboard_screen.dart';
 import 'package:e/services/firestore_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +34,26 @@ class _RequestScreenState extends State<RequestScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
+        // Check if user has a shop
+        final userData = await _firestoreService.getUserData(user.uid);
+        if (userData != null &&
+            userData['shopId'] != null &&
+            userData['shopId'].isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(
+                context, SellerDashboardScreen.routeName);
+          });
+          return;
+        }
+        // Check request status if no shop exists
         final request = await _firestoreService.getSellerRequest(user.uid);
         setState(() {
           _request = request;
         });
         if (request != null && request.status == 'approved') {
-          Navigator.pushReplacementNamed(context, ShopSetupScreen.routeName);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, ShopSetupScreen.routeName);
+          });
         }
       }
     } catch (e) {
@@ -102,6 +117,7 @@ class _RequestScreenState extends State<RequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.restart_alt))],
         title: Text(
           'Seller Request',
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(

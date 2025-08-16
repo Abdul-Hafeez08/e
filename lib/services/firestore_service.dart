@@ -30,7 +30,7 @@ class FirestoreService {
       final doc =
           await _firestore.collection(kShopsCollection).doc(shopId).get();
       if (doc.exists) {
-        return ShopModel.fromSnapshot(doc);
+        return ShopModel.fromSnapshot(doc); // Fixed typo: removed "Doc()"
       }
       return null;
     } catch (e) {
@@ -46,6 +46,7 @@ class FirestoreService {
     required String category,
     required String description,
     required String imageUrl,
+    required String sellerId, // Add sellerId
   }) async {
     try {
       await _firestore.collection(kProductsCollection).add({
@@ -55,9 +56,55 @@ class FirestoreService {
         'category': category,
         'description': description,
         'imageUrl': imageUrl,
+        'sellerId': sellerId, // Add sellerId
       });
     } catch (e) {
       throw Exception('Failed to create product: $e');
+    }
+  }
+
+  // Update a product
+  Future<void> updateProduct({
+    required String productId,
+    required String shopId,
+    required String name,
+    required double price,
+    required String category,
+    required String description,
+    required String? imageUrl,
+    required String sellerId,
+  }) async {
+    try {
+      final doc =
+          await _firestore.collection(kProductsCollection).doc(productId).get();
+      if (!doc.exists) {
+        throw Exception('Product document does not exist');
+      }
+      await _firestore.collection(kProductsCollection).doc(productId).update({
+        'name': name,
+        'price': price,
+        'category': category,
+        'description': description,
+        'shopId': shopId,
+        'sellerId': sellerId,
+        'imageUrl': imageUrl ?? kDefaultImageUrl,
+      });
+    } catch (e) {
+      throw Exception('Failed to update product: $e');
+    }
+  }
+
+  // Delete a product
+  Future<void> deleteProduct(String productId, String shopId) async {
+    try {
+      final doc =
+          await _firestore.collection(kProductsCollection).doc(productId).get();
+      if (!doc.exists) {
+        throw Exception('Product document does not exist');
+      }
+      await _firestore.collection(kProductsCollection).doc(productId).delete();
+    } catch (e) {
+      throw Exception('Failed to delete product: $e');
     }
   }
 

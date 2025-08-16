@@ -94,62 +94,94 @@ class _RequestApprovalScreenState extends State<RequestApprovalScreen> {
             itemCount: requests.length,
             itemBuilder: (context, index) {
               final request = requests[index];
-              return Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-                ),
-                margin: const EdgeInsets.symmetric(vertical: kSmallPadding),
-                child: Padding(
-                  padding: const EdgeInsets.all(kDefaultPadding),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Seller ID: ${request.sellerId}',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: kTextColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: kSmallPadding),
-                      Text(
-                        'Status: ${request.status.capitalize()}',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: kTextColorSecondary,
-                            ),
-                      ),
-                      Text(
-                        'Created: ${request.createdAt.toDate().toString().substring(0, 16)}',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: kTextColorSecondary,
-                            ),
-                      ),
-                      const SizedBox(height: kDefaultPadding),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+              return FutureBuilder<Map<String, dynamic>?>(
+                future: _firestoreService.getUserData(request.sellerId),
+                builder: (context, userSnapshot) {
+                  String name = 'Loading...';
+                  String email = 'Loading...';
+                  if (userSnapshot.connectionState == ConnectionState.done) {
+                    if (userSnapshot.hasData && userSnapshot.data != null) {
+                      name = userSnapshot.data!['name'] ?? 'Unknown';
+                      email = userSnapshot.data!['email'] ?? 'Unknown';
+                    } else {
+                      name = 'Unknown';
+                      email = 'Unknown';
+                    }
+                  }
+                  return Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(kDefaultBorderRadius),
+                    ),
+                    margin: const EdgeInsets.symmetric(vertical: kSmallPadding),
+                    child: Padding(
+                      padding: const EdgeInsets.all(kDefaultPadding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextButton(
-                            onPressed: () =>
-                                _updateRequestStatus(request.id, 'approved'),
-                            child: const Text(
-                              'Approve',
-                              style: TextStyle(color: kPrimaryColor),
-                            ),
+                          Text(
+                            'Name: $name',
+                            style:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      color: kTextColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                           ),
-                          TextButton(
-                            onPressed: () =>
-                                _updateRequestStatus(request.id, 'rejected'),
-                            child: const Text(
-                              'Reject',
-                              style: TextStyle(color: kErrorColor),
-                            ),
+                          const SizedBox(height: kSmallPadding),
+                          Text(
+                            'Email: $email',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: kTextColorSecondary,
+                                ),
+                          ),
+                          Text(
+                            'Status: ${request.status.capitalize()}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: kTextColorSecondary,
+                                ),
+                          ),
+                          Text(
+                            'Created: ${request.createdAt.toDate().toString().substring(0, 16)}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: kTextColorSecondary,
+                                ),
+                          ),
+                          const SizedBox(height: kDefaultPadding),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () => _updateRequestStatus(
+                                    request.id, 'approved'),
+                                child: const Text(
+                                  'Approve',
+                                  style: TextStyle(color: kPrimaryColor),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => _updateRequestStatus(
+                                    request.id, 'rejected'),
+                                child: const Text(
+                                  'Reject',
+                                  style: TextStyle(color: kErrorColor),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             },
           );
