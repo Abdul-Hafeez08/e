@@ -1,6 +1,7 @@
+import 'package:e/Widets/Bottom_Bar.dart';
 import 'package:e/routes.dart';
 import 'package:e/screens/auth/login_screen.dart';
-import 'package:e/screens/buyer/home_screen.dart';
+import 'package:e/screens/buyer/Provider/cart_provider.dart';
 import 'package:e/screens/seller/request_screen.dart';
 import 'package:e/screens/seller/seller_dashboard_screen.dart';
 import 'package:e/services/auth_service.dart';
@@ -8,14 +9,20 @@ import 'package:e/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const EcommerceApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => CartProvider(),
+    )
+  ], child: const EcommerceApp()));
 }
 
 class EcommerceApp extends StatelessWidget {
@@ -27,6 +34,7 @@ class EcommerceApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Fresh Cart',
       theme: ThemeData(
+        // fontFamily: 'Roboto',
         primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: kBackgroundColor,
         colorScheme: ColorScheme.fromSeed(
@@ -88,8 +96,11 @@ class EcommerceApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
+      // home: const SplashScreen(),
       home: const SplashScreen(),
       onGenerateRoute: RouteGenerator.generateRoute,
+
+      // onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
@@ -109,31 +120,91 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuthState() async {
-    await Future.delayed(const Duration(seconds: 2)); // Simulate splash delay
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      Navigator.pushReplacementNamed(context, LoginScreen.routeName);
-    } else {
+    await Future.delayed(const Duration(seconds: 2));
+
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+        return;
+      }
+
       final authService = AuthService();
       final userData = await authService.getUserData(user.uid);
+
+      if (!mounted) return; // check again before navigating
+
       if (userData != null) {
         if (userData['role'] == 'buyer') {
-          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const BottomBar()),
+          );
         } else if (userData['role'] == 'seller') {
           if (userData['shopId'] != null && userData['shopId'].isNotEmpty) {
-            Navigator.pushReplacementNamed(
-                context, SellerDashboardScreen.routeName);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const SellerDashboardScreen()),
+            );
           } else {
-            Navigator.pushReplacementNamed(context, RequestScreen.routeName);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const RequestScreen()),
+            );
           }
         } else {
-          Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
         }
       } else {
-        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
       }
+    } catch (e) {
+      debugPrint("Auth check failed: $e");
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
     }
   }
+
+  // Future<void> _checkAuthState() async {
+  //   await Future.delayed(const Duration(seconds: 2)); // Simulate splash delay
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //   if (user == null) {
+  //     Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+  //   } else {
+  //     final authService = AuthService();
+  //     final userData = await authService.getUserData(user.uid);
+  //     if (userData != null) {
+  //       if (userData['role'] == 'buyer') {
+  //         Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+  //       } else if (userData['role'] == 'seller') {
+  //         if (userData['shopId'] != null && userData['shopId'].isNotEmpty) {
+  //           Navigator.pushReplacementNamed(
+  //               context, SellerDashboardScreen.routeName);
+  //         } else {
+  //           Navigator.pushReplacementNamed(context, RequestScreen.routeName);
+  //         }
+  //       } else {
+  //         Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+  //       }
+  //     } else {
+  //       Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -155,10 +226,30 @@ class _SplashScreenState extends State<SplashScreen> {
                   .textTheme
                   .headlineLarge!
                   .copyWith(color: Colors.white),
-            ),
+            ).animate().fade(duration: 500.ms).scale(delay: 500.ms)
+            // .moveY(begin: 50, end: 0, duration: 600.ms),
           ],
         ),
       ),
     );
   }
 }
+
+// void main() {
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       title: 'Flutter Bottom Navigation Demo',
+//       theme: ThemeData(
+//         primarySwatch: Colors.green,
+//       ),
+//       home: MainApp(),
+//     );
+//   }
+// }

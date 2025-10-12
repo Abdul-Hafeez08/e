@@ -1,7 +1,9 @@
 import 'package:e/models/product_model.dart';
+import 'package:e/screens/buyer/Provider/cart_provider.dart';
 import 'package:e/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   static const String routeName = '/product-detail';
@@ -229,9 +231,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: AnimatedScaleButton(
                               child: ElevatedButton(
                                 onPressed: () {
+                                  Provider.of<CartProvider>(context,
+                                          listen: false)
+                                      .addItem(widget.product, _quantity);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: const Text('Added to cart!'),
+                                      content: Text(
+                                          '${widget.product.name} added to cart!'),
                                       backgroundColor: kPrimaryColor,
                                     ),
                                   );

@@ -1,4 +1,5 @@
 import 'package:e/models/product_model.dart';
+import 'package:e/screens/buyer/cart/cart_screen.dart';
 import 'package:e/screens/buyer/product_detail_screen.dart';
 import 'package:e/screens/buyer/product_list_screen.dart';
 import 'package:e/services/firestore_service.dart';
@@ -43,6 +44,24 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: kPrimaryColor,
         elevation: 0,
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CartScreen(),
+                    ));
+              },
+              icon: Stack(
+                children: [
+                  Icon(Icons.shopping_bag),
+                  Positioned(
+                      child: CircleAvatar(
+                    radius: 5,
+                    child: Text('3'),
+                  ))
+                ],
+              )),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
