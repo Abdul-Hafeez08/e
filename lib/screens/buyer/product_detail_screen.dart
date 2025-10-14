@@ -1,5 +1,6 @@
 import 'package:e/models/product_model.dart';
 import 'package:e/screens/buyer/Provider/cart_provider.dart';
+import 'package:e/screens/buyer/cart/cart_screen.dart';
 import 'package:e/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -21,9 +22,52 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
+        actions: [
+          Consumer<CartProvider>(
+            builder: (context, value, child) {
+              return IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CartScreen(),
+                        ));
+                  },
+                  icon: Stack(
+                    children: [
+                      Icon(
+                        Icons.shopping_bag,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      if (cart.itemCount > 0)
+                        Positioned(
+                            right: 14,
+                            top: 10,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.red,
+                              radius: 8,
+                              child: Text(
+                                value.items.length.toString(),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            )),
+                      SizedBox(
+                        width: 10,
+                      )
+                    ],
+                  ));
+            },
+          ),
+        ],
         title: Text(
           widget.product.name,
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(
@@ -203,6 +247,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: kDefaultPadding),
+                      Text(
+                        'Shop Name : ',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium!
+                            .copyWith(
+                              color: kTextColor,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: kDefaultPadding),
                       // Description
                       Text(
                         'Description',
@@ -255,23 +311,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: kDefaultPadding),
-                          Expanded(
-                            child: AnimatedScaleButton(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: const Text(
-                                          'Purchase functionality coming soon!'),
-                                      backgroundColor: kPrimaryColor,
-                                    ),
-                                  );
-                                },
-                                child: const Text('Buy Now'),
-                              ),
-                            ),
-                          ),
+                          //const SizedBox(width: kDefaultPadding),
+                          // Expanded(
+                          //   child: AnimatedScaleButton(
+                          //     child: ElevatedButton(
+                          //       onPressed: () {
+                          //         ScaffoldMessenger.of(context).showSnackBar(
+                          //           SnackBar(
+                          //             content: const Text(
+                          //                 'Purchase functionality coming soon!'),
+                          //             backgroundColor: kPrimaryColor,
+                          //           ),
+                          //         );
+                          //       },
+                          //       child: const Text('Buy Now'),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ],

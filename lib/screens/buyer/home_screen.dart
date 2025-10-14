@@ -1,7 +1,9 @@
 import 'package:e/models/product_model.dart';
+import 'package:e/screens/buyer/Provider/cart_provider.dart';
 import 'package:e/screens/buyer/cart/cart_screen.dart';
 import 'package:e/screens/buyer/product_detail_screen.dart';
 import 'package:e/screens/buyer/product_list_screen.dart';
+import 'package:e/screens/profile/User_profile.dart';
 import 'package:e/services/firestore_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/widgets/product_card.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -32,8 +35,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu), // Drawer icon ki jagah
+          onPressed: () {
+            // Jab press ho, new screen par jao
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          },
+        ),
         title: Text(
           kAppName,
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(
@@ -44,31 +58,56 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: kPrimaryColor,
         elevation: 0,
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CartScreen(),
-                    ));
-              },
-              icon: Stack(
-                children: [
-                  Icon(Icons.shopping_bag),
-                  Positioned(
-                      child: CircleAvatar(
-                    radius: 5,
-                    child: Text('3'),
-                  ))
-                ],
-              )),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
+          Consumer<CartProvider>(
+            builder: (context, value, child) {
+              return IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CartScreen(),
+                        ));
+                  },
+                  icon: Stack(
+                    children: [
+                      Icon(
+                        Icons.shopping_bag,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      if (cart.itemCount > 0)
+                        Positioned(
+                            right: 14,
+                            top: 10,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.red,
+                              radius: 8,
+                              child: Text(
+                                value.items.length.toString(),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ))
+                    ],
+                  ));
             },
           ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 12),
+          //   child: IconButton(
+          //     icon: const Icon(Icons.logout, color: Colors.white),
+          //     onPressed: () async {
+          //       await FirebaseAuth.instance.signOut();
+          //       Navigator.pushReplacementNamed(context, '/login');
+          //     },
+          //   ),
+          // ),
+          SizedBox(
+            width: 10,
+          )
         ],
       ),
       body: Column(

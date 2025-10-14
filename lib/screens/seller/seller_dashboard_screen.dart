@@ -2,6 +2,7 @@ import 'package:e/models/product_model.dart';
 import 'package:e/models/shop_model.dart';
 import 'package:e/screens/auth/login_screen.dart';
 import 'package:e/screens/buyer/home_screen.dart';
+import 'package:e/screens/seller/orders.dart';
 import 'package:e/screens/seller/product_edit_screen.dart';
 import 'package:e/screens/seller/product_upload_screen.dart';
 import 'package:e/services/firestore_service.dart';
@@ -85,13 +86,17 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                   foregroundColor: Colors.white,
                   side: BorderSide(color: Colors.white)),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrdersScreen(),
+                    ));
               },
               icon: Icon(
                 Icons.shop_sharp,
                 color: Colors.white,
               ),
-              label: Text('Become Buyer')),
+              label: Text('See Orders')),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {

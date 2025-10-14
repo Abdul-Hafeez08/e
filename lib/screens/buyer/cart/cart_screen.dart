@@ -11,8 +11,6 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
-
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -20,44 +18,55 @@ class CartScreen extends StatelessWidget {
         backgroundColor: kPrimaryColor,
         elevation: 0,
       ),
-      body: cart.items.isEmpty
-          ? const Center(child: Text('Your cart is empty'))
-          : ListView.builder(
-              itemCount: cart.items.length,
-              itemBuilder: (ctx, i) {
-                final item = cart.items[i];
-                return CartItemWidget(item: item);
-              },
+      body: Consumer<CartProvider>(
+        builder: (context, cart, child) => Column(
+          children: [
+            Expanded(
+              child: cart.items.isEmpty
+                  ? const Center(child: Text('Your cart is empty'))
+                  : ListView.builder(
+                      itemCount: cart.items.length,
+                      itemBuilder: (ctx, i) {
+                        final item = cart.items[i];
+                        return CartItemWidget(item: item);
+                      },
+                    ),
             ),
-      bottomNavigationBar: cart.items.isEmpty
-          ? null
-          : Padding(
-              padding: const EdgeInsets.all(kDefaultPadding),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total: \$${cart.totalAmount.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (ctx) => const CheckoutScreen()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: kPrimaryColor),
-                    child: const Text('Proceed to Checkout'),
-                  ),
-                ],
+            if (!cart.items.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(kDefaultPadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total: \$${cart.totalAmount.toStringAsFixed(2)}',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                color: kPrimaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => const CheckoutScreen()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: kPrimaryColor),
+                      child: const Text('Proceed to Checkout'),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            SizedBox(
+              height: 20,
+            )
+          ],
+        ),
+      ),
     );
   }
 }
@@ -75,8 +84,13 @@ class CartItemWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(
           horizontal: kDefaultPadding, vertical: kSmallPadding),
       child: ListTile(
-        leading: Image.network(item.product.imageUrl,
-            width: 50, height: 50, fit: BoxFit.cover),
+        leading: Image.network(
+          item.product.imageUrl,
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+        ),
         title: Text(item.product.name),
         subtitle: Text(
             '\$${item.product.price.toStringAsFixed(2)} x ${item.quantity}'),

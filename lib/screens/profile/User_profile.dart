@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e/screens/buyer/cart/cart_screen.dart';
 import 'package:e/screens/profile/Settings.dart';
 import 'package:e/screens/profile/Support_Screen.dart';
 import 'package:e/screens/profile/order_Details.dart';
@@ -67,10 +68,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isGuest ? "Guest" : "My Profile"),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -101,7 +98,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _buildTile(
                   icon: Icons.shopping_cart,
                   title: "My Cart",
-                  onTap: () => _handleTap("/cart"),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CartScreen(),
+                    ),
+                  ),
                 ),
                 _buildTile(
                   icon: Icons.history,

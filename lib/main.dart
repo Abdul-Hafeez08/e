@@ -34,6 +34,9 @@ class EcommerceApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Fresh Cart',
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          foregroundColor: Colors.white,
+        ),
         // fontFamily: 'Roboto',
         primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: kBackgroundColor,
@@ -234,22 +237,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
-// void main() {
-//   runApp(const MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       title: 'Flutter Bottom Navigation Demo',
-//       theme: ThemeData(
-//         primarySwatch: Colors.green,
-//       ),
-//       home: MainApp(),
-//     );
-//   }
-// }

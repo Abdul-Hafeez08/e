@@ -2,6 +2,7 @@ import 'package:e/Widets/Bottom_Bar.dart';
 import 'package:e/screens/admin/request_approval_screen.dart';
 import 'package:e/screens/auth/role_selection_screen.dart';
 import 'package:e/screens/auth/signup_screen.dart';
+import 'package:e/screens/buyer/home_screen.dart';
 import 'package:e/screens/seller/request_screen.dart';
 import 'package:e/services/auth_service.dart';
 import 'package:e/utils/constants.dart';
@@ -51,12 +52,15 @@ class _LoginScreenState extends State<LoginScreen> {
             if (userData['role'] == 'buyer') {
               /// ✅ Named route navigation
               // Navigator.pushReplacementNamed(context, HomeScreen.routeName);
-
-              // / ✅ Normal navigation (direct route)
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const BottomBar()),
+                MaterialPageRoute(builder: (context) => const BottomBar()),
               );
+              // / ✅ Normal navigation (direct route)
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(builder: (_) => BottomBar()),
+              // );
             } else if (userData['role'] == 'seller') {
               /// ✅ Named route navigation
               Navigator.pushReplacementNamed(context, RequestScreen.routeName);
