@@ -2,6 +2,8 @@ import 'package:e/Widets/Bottom_Bar.dart';
 import 'package:e/routes.dart';
 import 'package:e/screens/auth/login_screen.dart';
 import 'package:e/screens/buyer/Provider/cart_provider.dart';
+import 'package:e/screens/seller/provider/orderprovider.dart';
+
 import 'package:e/screens/seller/request_screen.dart';
 import 'package:e/screens/seller/seller_dashboard_screen.dart';
 import 'package:e/services/auth_service.dart';
@@ -19,6 +21,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => OrdersProvider(),
+    ),
     ChangeNotifierProvider(
       create: (context) => CartProvider(),
     )

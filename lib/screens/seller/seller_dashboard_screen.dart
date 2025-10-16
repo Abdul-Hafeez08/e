@@ -5,6 +5,7 @@ import 'package:e/screens/buyer/home_screen.dart';
 import 'package:e/screens/seller/orders.dart';
 import 'package:e/screens/seller/product_edit_screen.dart';
 import 'package:e/screens/seller/product_upload_screen.dart';
+import 'package:e/screens/seller/provider/orderprovider.dart';
 import 'package:e/services/firestore_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/widgets/product_card.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 
 class SellerDashboardScreen extends StatefulWidget {
   static const String routeName = '/seller-dashboard';
@@ -97,6 +99,27 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 color: Colors.white,
               ),
               label: Text('See Orders')),
+          SizedBox(
+            width: 8,
+          ),
+          Consumer<OrdersProvider>(
+            builder: (context, ordersProvider, child) {
+              final pendingCount = ordersProvider.statusCounts['Pending'] ?? 0;
+              return pendingCount > 0
+                  ? CircleAvatar(
+                      backgroundColor: Colors.red,
+                      radius: 13,
+                      child: Text(
+                        '$pendingCount',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium!
+                            .copyWith(color: Colors.white, fontSize: 15),
+                      ),
+                    )
+                  : const SizedBox.shrink();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {

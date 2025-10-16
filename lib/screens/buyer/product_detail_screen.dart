@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e/models/product_model.dart';
 import 'package:e/screens/buyer/Provider/cart_provider.dart';
 import 'package:e/screens/buyer/cart/cart_screen.dart';
@@ -102,11 +103,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         height: 350,
                         width: double.infinity,
                         decoration: BoxDecoration(
+                          // image: DecorationImage(
+                          //   image: NetworkImage(widget.product.imageUrl),
+                          //   fit: BoxFit.cover,
+                          //   onError: (exception, stackTrace) =>
+                          //       const NetworkImage(kDefaultImageUrl),
+                          // ),
                           image: DecorationImage(
-                            image: NetworkImage(widget.product.imageUrl),
+                            image: CachedNetworkImageProvider(
+                              widget.product.imageUrl,
+                              errorListener: (exception) =>
+                                  const NetworkImage(kDefaultImageUrl),
+                            ),
                             fit: BoxFit.cover,
-                            onError: (exception, stackTrace) =>
-                                const NetworkImage(kDefaultImageUrl),
                           ),
                           borderRadius: const BorderRadius.only(
                             bottomLeft:
@@ -144,6 +153,55 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AnimatedScaleButton(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Provider.of<CartProvider>(context,
+                                          listen: false)
+                                      .addItem(widget.product, _quantity);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          '${widget.product.name} added to cart!'),
+                                      backgroundColor: kPrimaryColor,
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: kPrimaryColor,
+                                  side: const BorderSide(color: kPrimaryColor),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        kDefaultBorderRadius),
+                                  ),
+                                ),
+                                child: const Text('Add to Cart'),
+                              ),
+                            ),
+                          ),
+                          //const SizedBox(width: kDefaultPadding),
+                          // Expanded(
+                          //   child: AnimatedScaleButton(
+                          //     child: ElevatedButton(
+                          //       onPressed: () {
+                          //         ScaffoldMessenger.of(context).showSnackBar(
+                          //           SnackBar(
+                          //             content: const Text(
+                          //                 'Purchase functionality coming soon!'),
+                          //             backgroundColor: kPrimaryColor,
+                          //           ),
+                          //         );
+                          //       },
+                          //       child: const Text('Buy Now'),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
                       // Product Name
                       Text(
                         widget.product.name,
@@ -247,18 +305,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: kDefaultPadding),
-                      Text(
-                        'Shop Name : ',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium!
-                            .copyWith(
-                              color: kTextColor,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: kDefaultPadding),
+                      // Text(
+                      //   'Shop Name : ',
+                      //   style: Theme.of(context)
+                      //       .textTheme
+                      //       .headlineMedium!
+                      //       .copyWith(
+                      //         color: kTextColor,
+                      //         fontSize: 20,
+                      //         fontWeight: FontWeight.bold,
+                      //       ),
+                      // ),
+                      // const SizedBox(height: kDefaultPadding),
                       // Description
                       Text(
                         'Description',
@@ -281,55 +339,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       const SizedBox(height: kLargePadding),
                       // Action Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AnimatedScaleButton(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Provider.of<CartProvider>(context,
-                                          listen: false)
-                                      .addItem(widget.product, _quantity);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          '${widget.product.name} added to cart!'),
-                                      backgroundColor: kPrimaryColor,
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: kPrimaryColor,
-                                  side: const BorderSide(color: kPrimaryColor),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        kDefaultBorderRadius),
-                                  ),
-                                ),
-                                child: const Text('Add to Cart'),
-                              ),
-                            ),
-                          ),
-                          //const SizedBox(width: kDefaultPadding),
-                          // Expanded(
-                          //   child: AnimatedScaleButton(
-                          //     child: ElevatedButton(
-                          //       onPressed: () {
-                          //         ScaffoldMessenger.of(context).showSnackBar(
-                          //           SnackBar(
-                          //             content: const Text(
-                          //                 'Purchase functionality coming soon!'),
-                          //             backgroundColor: kPrimaryColor,
-                          //           ),
-                          //         );
-                          //       },
-                          //       child: const Text('Buy Now'),
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
-                      ),
                     ],
                   ),
                 ),

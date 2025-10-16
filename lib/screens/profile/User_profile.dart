@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e/screens/buyer/cart/cart_screen.dart';
+import 'package:e/screens/buyer/orders.dart';
 import 'package:e/screens/profile/Settings.dart';
 import 'package:e/screens/profile/Support_Screen.dart';
 import 'package:e/screens/profile/order_Details.dart';
@@ -188,89 +189,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-class OrderHistoryScreen extends StatelessWidget {
-  const OrderHistoryScreen({super.key});
+// class OrderHistoryScreen extends StatelessWidget {
+//   const OrderHistoryScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    // Dummy orders list
-    final List<Map<String, dynamic>> orders = [
-      {
-        "id": "ORD12345",
-        "date": "2025-09-21",
-        "status": "Delivered",
-        "total": 2500,
-      },
-      {
-        "id": "ORD98765",
-        "date": "2025-09-18",
-        "status": "Pending",
-        "total": 1200,
-      },
-      {
-        "id": "ORD54321",
-        "date": "2025-09-15",
-        "status": "Cancelled",
-        "total": 800,
-      },
-    ];
+//   @override
+//   Widget build(BuildContext context) {
+//     // Dummy orders list
+//     final List<Map<String, dynamic>> orders = [
+//       {
+//         "id": "ORD12345",
+//         "date": "2025-09-21",
+//         "status": "Delivered",
+//         "total": 2500,
+//       },
+//       {
+//         "id": "ORD98765",
+//         "date": "2025-09-18",
+//         "status": "Pending",
+//         "total": 1200,
+//       },
+//       {
+//         "id": "ORD54321",
+//         "date": "2025-09-15",
+//         "status": "Cancelled",
+//         "total": 800,
+//       },
+//     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Order History"),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: ListView.builder(
-        itemCount: orders.length,
-        itemBuilder: (context, index) {
-          final order = orders[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 3,
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.blue.shade100,
-                child: const Icon(Icons.shopping_bag, color: Colors.blue),
-              ),
-              title: Text("Order #${order["id"]}"),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Date: ${order["date"]}"),
-                  Text(
-                    "Status: ${order["status"]}",
-                    style: TextStyle(
-                      color: order["status"] == "Delivered"
-                          ? Colors.green
-                          : order["status"] == "Pending"
-                              ? Colors.orange
-                              : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text("Total: Rs. ${order["total"]}"),
-                ],
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OrderDetailScreen(),
-                  ),
-                );
-                // For demo - detail screen open later
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Opening details of ${order["id"]}")),
-                );
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Order History"),
+//         backgroundColor: Theme.of(context).primaryColor,
+//       ),
+//       body: ListView.builder(
+//         itemCount: orders.length,
+//         itemBuilder: (context, index) {
+//           final order = orders[index];
+//           return Card(
+//             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(12),
+//             ),
+//             elevation: 3,
+//             child: ListTile(
+//               leading: CircleAvatar(
+//                 backgroundColor: Colors.blue.shade100,
+//                 child: const Icon(Icons.shopping_bag, color: Colors.blue),
+//               ),
+//               title: Text("Order #${order["id"]}"),
+//               subtitle: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Text("Date: ${order["date"]}"),
+//                   Text(
+//                     "Status: ${order["status"]}",
+//                     style: TextStyle(
+//                       color: order["status"] == "Delivered"
+//                           ? Colors.green
+//                           : order["status"] == "Pending"
+//                               ? Colors.orange
+//                               : Colors.red,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                   Text("Total: Rs. ${order["total"]}"),
+//                 ],
+//               ),
+//               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+//               onTap: () {
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => const OrderDetailScreen(),
+//                   ),
+//                 );
+//                 // For demo - detail screen open later
+//                 ScaffoldMessenger.of(context).showSnackBar(
+//                   SnackBar(content: Text("Opening details of ${order["id"]}")),
+//                 );
+//               },
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

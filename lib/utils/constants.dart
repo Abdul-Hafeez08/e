@@ -25,20 +25,10 @@ const String kDefaultImageUrl = 'https://via.placeholder.com/150';
 // Categories
 const List<String> kProductCategories = [
   'Vegetables',
+  'Grocery & Essentials',
   'Fruits',
-  'Grains',
-  'Dairy',
-  'Spices',
-  'Oils',
-  'Snacks',
-  'Beverages',
-  'Canned Goods',
-  'Frozen Foods',
-  'Bakery',
-  'Meat & Poultry',
-  'Seafood',
-  'Condiments',
-  'Other',
+  'Chicken & Meat',
+  'Beverages & Dairy'
 ];
 
 // Paddings and Margins

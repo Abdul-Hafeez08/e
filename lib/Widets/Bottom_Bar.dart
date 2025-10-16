@@ -19,7 +19,7 @@ class _BottomBarState extends State<BottomBar> {
     HomeScreen(),
     Text('Categories Page'),
     Text('Messages Page'),
-    ProfileScreen()
+    Text('Favorite'),
   ];
 
   // Tab change hone par yeh function call hoga
@@ -82,8 +82,8 @@ class _BottomBarState extends State<BottomBar> {
             ),
             // 5. Profile
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: 'Profile',
+              icon: Icon(Icons.favorite),
+              label: 'Favorite',
             ),
           ],
         ),
