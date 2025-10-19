@@ -1,14 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Colors
-// const Color kPrimaryColor = Color(0xFF6200EE);
-// const Color kSecondaryColor = Color(0xFF03DAC6);
-// const Color kBackgroundColor = Color(0xFFF5F5F5);
-// const Color kTextColor = Color(0xFF212121);
-// const Color kTextColorSecondary = Color(0xFF757575);
-// const Color kBorderColor = Color(0xFFDDDDDD);
-// const Color kErrorColor = Color(0xFFB00020);
-
 const Color kPrimaryColor = Color(0xFF2E7D32); // Vibrant green
 const Color kSecondaryColor = Color(0xFF66BB6A); // Light green accent
 const Color kBackgroundColor = Color(0xFFF1F8E9); // Soft green-tinted off-white
@@ -25,14 +16,21 @@ const String kDefaultImageUrl = 'https://via.placeholder.com/150';
 // Categories
 const List<String> kProductCategories = [
   'Vegetables',
-  'Grocery & Essentials',
+  'Grocery',
   'Fruits',
-  'Chicken & Meat',
-  'Beverages & Dairy'
+  'Meat',
+  'Dairy'
+];
+const List<String> imagenames = [
+  'vegetables',
+  'bakery',
+  'fruits',
+  'chicken',
+  'drinks'
 ];
 
 // Paddings and Margins
-const double kDefaultPadding = 16.0;
+const double kDefaultPadding = 16;
 const double kSmallPadding = 8.0;
 const double kLargePadding = 24.0;
 

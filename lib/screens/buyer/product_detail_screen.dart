@@ -159,16 +159,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: AnimatedScaleButton(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Provider.of<CartProvider>(context,
-                                          listen: false)
-                                      .addItem(widget.product, _quantity);
+                                  final cart = Provider.of<CartProvider>(
+                                      context,
+                                      listen: false);
+                                  if (cart.currentSellerId.isNotEmpty &&
+                                      cart.currentSellerId !=
+                                          widget.product.sellerId) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Only ${cart.currentSellerName}\'s products can be added to the cart.')),
+                                    );
+                                    return;
+                                  }
+                                  cart.addItem(widget.product,
+                                      _quantity); // Assuming quantity 1 by default
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(
-                                          '${widget.product.name} added to cart!'),
-                                      backgroundColor: kPrimaryColor,
-                                    ),
+                                        content: Text(
+                                            '${widget.product.name} added to cart!')),
                                   );
+                                  // Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
@@ -183,23 +194,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                             ),
                           ),
-                          //const SizedBox(width: kDefaultPadding),
-                          // Expanded(
-                          //   child: AnimatedScaleButton(
-                          //     child: ElevatedButton(
-                          //       onPressed: () {
-                          //         ScaffoldMessenger.of(context).showSnackBar(
-                          //           SnackBar(
-                          //             content: const Text(
-                          //                 'Purchase functionality coming soon!'),
-                          //             backgroundColor: kPrimaryColor,
-                          //           ),
-                          //         );
-                          //       },
-                          //       child: const Text('Buy Now'),
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                       // Product Name
@@ -305,17 +299,64 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: kDefaultPadding),
-                      // Text(
-                      //   'Shop Name : ',
-                      //   style: Theme.of(context)
-                      //       .textTheme
-                      //       .headlineMedium!
-                      //       .copyWith(
-                      //         color: kTextColor,
-                      //         fontSize: 20,
-                      //         fontWeight: FontWeight.bold,
-                      //       ),
-                      // ),
+                      // Shop Name and Icons
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: kDefaultPadding),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.store,
+                                    color: kTextColorSecondary),
+                                const SizedBox(width: kSmallPadding),
+                                Text(
+                                  'Shop: ${widget.product.sellerName}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .copyWith(
+                                        color: kTextColor,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.location_on,
+                                      color: kPrimaryColor),
+                                  onPressed: () {
+                                    // Placeholder for Visit Shop action
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Visit Shop feature coming soon!')),
+                                    );
+                                  },
+                                  tooltip: 'Visit Shop',
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.chat,
+                                      color: kPrimaryColor),
+                                  onPressed: () {
+                                    // Placeholder for Chat action
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Chat feature coming soon!')),
+                                    );
+                                  },
+                                  tooltip: 'Chat with Seller',
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                       // const SizedBox(height: kDefaultPadding),
                       // Description
                       Text(

@@ -3,7 +3,10 @@ import 'package:flutter/foundation.dart';
 
 class CartProvider with ChangeNotifier {
   List<CartItem> items = [];
+  String _currentSellerId = '';
+  String _currentSellerName = '';
   int count = 0;
+
   int get itemCount {
     count = 0;
     for (var item in items) {
@@ -20,7 +23,15 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
+  String get currentSellerId => _currentSellerId;
+  String get currentSellerName => _currentSellerName;
+
   void addItem(ProductModel product, int quantity) {
+    if (items.isNotEmpty && _currentSellerId != product.sellerId) {
+      // Prevent adding different seller's product
+      return;
+    }
+
     bool found = false;
     for (int i = 0; i < items.length; i++) {
       if (items[i].product.id == product.id) {
@@ -31,6 +42,10 @@ class CartProvider with ChangeNotifier {
     }
     if (!found) {
       items.add(CartItem(product: product, quantity: quantity));
+      if (_currentSellerId.isEmpty) {
+        _currentSellerId = product.sellerId;
+        _currentSellerName = product.sellerName;
+      }
     }
     notifyListeners();
   }
@@ -57,16 +72,21 @@ class CartProvider with ChangeNotifier {
 
   void removeItem(String productId) {
     items.removeWhere((item) => item.product.id == productId);
+    if (items.isEmpty) {
+      _currentSellerId = '';
+      _currentSellerName = '';
+    }
     notifyListeners();
   }
 
   void clearCart() {
     items.clear();
+    _currentSellerId = '';
+    _currentSellerName = '';
     notifyListeners();
   }
 }
 
-// Add this to lib/models/cart_item.dart or inline in provider
 class CartItem {
   final ProductModel product;
   int quantity;

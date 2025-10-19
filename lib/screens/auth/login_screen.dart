@@ -2,13 +2,14 @@ import 'package:e/Widets/Bottom_Bar.dart';
 import 'package:e/screens/admin/request_approval_screen.dart';
 import 'package:e/screens/auth/role_selection_screen.dart';
 import 'package:e/screens/auth/signup_screen.dart';
-import 'package:e/screens/buyer/home_screen.dart';
+
 import 'package:e/screens/seller/request_screen.dart';
 import 'package:e/services/auth_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -50,47 +51,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
           if (userData != null) {
             if (userData['role'] == 'buyer') {
-              /// ✅ Named route navigation
-              // Navigator.pushReplacementNamed(context, HomeScreen.routeName);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const BottomBar()),
               );
-              // / ✅ Normal navigation (direct route)
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (_) => BottomBar()),
-              // );
             } else if (userData['role'] == 'seller') {
-              /// ✅ Named route navigation
               Navigator.pushReplacementNamed(context, RequestScreen.routeName);
-
-              /// ✅ Normal navigation
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (_) => const RequestScreen()),
-              // );
             } else {
-              /// ✅ Named route navigation
               Navigator.pushReplacementNamed(
                   context, RoleSelectionScreen.routeName);
-
-              /// ✅ Normal navigation
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
-              // );
             }
           } else {
             /// If no user data, go to role selection
             Navigator.pushReplacementNamed(
                 context, RoleSelectionScreen.routeName);
-
-            // Normal navigation alternative:
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
-            // );
           }
         }
       } catch (e) {
@@ -283,11 +257,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                               horizontal: 32,
                                             ),
                                           ),
-                                          child: const Text(
+                                          child: Text(
                                             'Login',
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 16,
+                                              fontSize: 16.sp,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           )),

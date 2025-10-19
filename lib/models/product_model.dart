@@ -8,7 +8,8 @@ class ProductModel {
   final String category;
   final String description;
   final String shopId;
-  final String sellerId; // Add sellerId
+  final String sellerId;
+  final String sellerName; // Added sellerName
   final String imageUrl;
 
   ProductModel({
@@ -18,7 +19,8 @@ class ProductModel {
     required this.category,
     required this.description,
     required this.shopId,
-    required this.sellerId, // Add sellerId
+    required this.sellerId,
+    required this.sellerName, // Added sellerName
     required this.imageUrl,
   });
 
@@ -29,7 +31,8 @@ class ProductModel {
       'category': category,
       'description': description,
       'shopId': shopId,
-      'sellerId': sellerId, // Add sellerId
+      'sellerId': sellerId,
+      'sellerName': sellerName, // Added sellerName
       'imageUrl': imageUrl,
     };
   }
@@ -42,7 +45,8 @@ class ProductModel {
       category: map['category'] ?? '',
       description: map['description'] ?? '',
       shopId: map['shopId'] ?? '',
-      sellerId: map['sellerId'] ?? '', // Add sellerId
+      sellerId: map['sellerId'] ?? '',
+      sellerName: map['sellerName'] ?? 'Unknown Seller', // Added sellerName
       imageUrl: map['imageUrl'] ?? kDefaultImageUrl,
     );
   }

@@ -46,7 +46,8 @@ class FirestoreService {
     required String category,
     required String description,
     required String imageUrl,
-    required String sellerId, // Add sellerId
+    required String sellerId,
+    required String sellerName, // Add sellerId
   }) async {
     try {
       await _firestore.collection(kProductsCollection).add({
@@ -56,7 +57,8 @@ class FirestoreService {
         'category': category,
         'description': description,
         'imageUrl': imageUrl,
-        'sellerId': sellerId, // Add sellerId
+        'sellerId': sellerId,
+        'sellerName': sellerName,
       });
     } catch (e) {
       throw Exception('Failed to create product: $e');
@@ -201,5 +203,22 @@ class FirestoreService {
     } catch (e) {
       throw Exception('Failed to update user shop ID: $e');
     }
+  }
+
+  Stream<QuerySnapshot> getAllShops() {
+    return FirebaseFirestore.instance.collection('shops').snapshots();
+  }
+
+  Stream<QuerySnapshot> getProductsBySeller(String sellerId) {
+    return FirebaseFirestore.instance
+        .collection('products')
+        .where('sellerId', isEqualTo: sellerId)
+        .snapshots();
+  }
+
+  Future<Map<String, dynamic>?> getShopData(String shopId) async {
+    final doc =
+        await FirebaseFirestore.instance.collection('shops').doc(shopId).get();
+    return doc.data();
   }
 }

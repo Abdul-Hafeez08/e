@@ -63,6 +63,13 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
           throw Exception('No shop found for this seller');
         }
 
+        // Load shop name
+        final shop = await _firestoreService.getShop(shopId);
+        if (shop == null) {
+          throw Exception('Shop data not found');
+        }
+        final shopName = shop.name;
+
         final imageUrl =
             await _storageService.uploadProductImage(_imageFile!, shopId);
         await _firestoreService.createProduct(
@@ -72,11 +79,11 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
           category: _selectedCategory!,
           description: _descriptionController.text.trim(),
           imageUrl: imageUrl,
-          sellerId: user.uid, // Added sellerId
+          sellerId: user.uid,
+          sellerName: shopName, // Add shop name here
         );
 
-        Navigator.pushNamed(
-            context, SellerDashboardScreen.routeName); // Changed to pushNamed
+        Navigator.pushNamed(context, SellerDashboardScreen.routeName);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Product uploaded successfully!'),
@@ -84,7 +91,7 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
           ),
         );
       } catch (e) {
-        print('Upload error: $e'); // Added debug logging
+        print('Upload error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

@@ -1,6 +1,7 @@
 // Yeh widget bottom navigation state ko manage karega
+import 'package:e/screens/buyer/all_Shops/all_shops.dart';
 import 'package:e/screens/buyer/home_screen.dart';
-import 'package:e/screens/profile/User_profile.dart';
+
 import 'package:flutter/material.dart';
 
 class BottomBar extends StatefulWidget {
@@ -17,7 +18,7 @@ class _BottomBarState extends State<BottomBar> {
   // Pages ki list (Aap yahan apne asli screens daal sakte hain)
   final List<Widget> _pages = <Widget>[
     HomeScreen(),
-    Text('Categories Page'),
+    AllShopsScreen(),
     Text('Messages Page'),
     Text('Favorite'),
   ];

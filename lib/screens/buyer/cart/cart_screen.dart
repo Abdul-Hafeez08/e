@@ -12,15 +12,44 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        title: const Text('Your Cart'),
+        title: Text(
+          'Your Cart',
+          style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF1B5E20),
+                Color(0xFF66BB6A),
+                Color(0xFF2E7D32),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         backgroundColor: kPrimaryColor,
         elevation: 0,
       ),
       body: Consumer<CartProvider>(
         builder: (context, cart, child) => Column(
           children: [
+            if (cart.items.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(kDefaultPadding),
+                child: Text(
+                  'Seller: ${cart.currentSellerName}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: kTextColor),
+                ),
+              ),
             Expanded(
               child: cart.items.isEmpty
                   ? const Center(child: Text('Your cart is empty'))
@@ -32,7 +61,7 @@ class CartScreen extends StatelessWidget {
                       },
                     ),
             ),
-            if (!cart.items.isEmpty)
+            if (cart.items.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(kDefaultPadding),
                 child: Row(
@@ -61,9 +90,7 @@ class CartScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            SizedBox(
-              height: 20,
-            )
+            SizedBox(height: 20),
           ],
         ),
       ),

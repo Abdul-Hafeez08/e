@@ -27,6 +27,12 @@ class _RequestScreenState extends State<RequestScreen> {
     _checkRequestStatus();
   }
 
+  reset() {
+    setState(() {
+      _checkRequestStatus();
+    });
+  }
+
   Future<void> _checkRequestStatus() async {
     setState(() {
       _isLoading = true;
@@ -117,7 +123,13 @@ class _RequestScreenState extends State<RequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.restart_alt))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                reset();
+              },
+              icon: Icon(Icons.restart_alt))
+        ],
         title: Text(
           'Seller Request',
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(

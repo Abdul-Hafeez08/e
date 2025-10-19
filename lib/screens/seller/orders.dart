@@ -424,33 +424,68 @@ class OrdersScreen extends StatelessWidget {
   }
 }
 
-class StatusOrdersScreen extends StatelessWidget {
+class StatusOrdersScreen extends StatefulWidget {
   final String status;
 
   const StatusOrdersScreen({super.key, required this.status});
+
+  @override
+  State<StatusOrdersScreen> createState() => _StatusOrdersScreenState();
+}
+
+class _StatusOrdersScreenState extends State<StatusOrdersScreen> {
+  String? globalSellerId;
+
+  Future<void> saveSellerIdGlobally() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        DocumentSnapshot doc = await FirebaseFirestore.instance
+            .collection('users') // Replace with your collection name
+            .doc(user.uid)
+            .get();
+        globalSellerId =
+            doc.get('sellerId') as String?; // Save to global variable
+        print('SellerId saved globally: $globalSellerId');
+      } catch (e) {
+        print('Error fetching sellerId: $e');
+        globalSellerId = null;
+      }
+    } else {
+      globalSellerId = null;
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    saveSellerIdGlobally();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        title:
-            Text('$status Orders', style: const TextStyle(color: Colors.white)),
+        title: Text('${widget.status} Orders',
+            style: const TextStyle(color: Colors.white)),
         backgroundColor: kPrimaryColor,
         elevation: 0,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('orders')
-            .where('status', isEqualTo: status)
-            // .orderBy('createdAt', descending: true)
+            .where('status', isEqualTo: widget.status)
+            .where('sellerId', isEqualTo: globalSellerId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            debugPrint('Error loading $status orders: ${snapshot.error}');
+            debugPrint(
+                'Error loading ${widget.status} orders: ${snapshot.error}');
             return const Center(
               child: Text(
                 'Error loading orders',
@@ -598,23 +633,25 @@ class StatusOrdersScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Status: $status',
+                                    'Status: ${widget.status}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyLarge!
                                         .copyWith(
-                                          color: status == 'Delivered'
+                                          color: widget.status == 'Delivered'
                                               ? Colors.green
-                                              : status == 'Pending'
+                                              : widget.status == 'Pending'
                                                   ? Colors.orange
-                                                  : status == 'Processing'
+                                                  : widget.status ==
+                                                          'Processing'
                                                       ? Colors.blue
-                                                      : status == 'Shipped'
+                                                      : widget.status ==
+                                                              'Shipped'
                                                           ? Colors.purple
-                                                          : status ==
+                                                          : widget.status ==
                                                                   'Cancelled'
                                                               ? Colors.red
-                                                              : status ==
+                                                              : widget.status ==
                                                                       'Returned'
                                                                   ? Colors
                                                                       .deepOrange
@@ -623,7 +660,7 @@ class StatusOrdersScreen extends StatelessWidget {
                                         ),
                                   ),
                                   DropdownButton<String>(
-                                    value: status,
+                                    value: widget.status,
                                     items: const [
                                       DropdownMenuItem(
                                         value: 'Pending',
@@ -652,7 +689,7 @@ class StatusOrdersScreen extends StatelessWidget {
                                     ],
                                     onChanged: (newStatus) {
                                       if (newStatus != null &&
-                                          newStatus != status) {
+                                          newStatus != widget.status) {
                                         updateOrderStatus(
                                             context, orderId, newStatus);
                                       }

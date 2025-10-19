@@ -3,17 +3,18 @@ import 'package:e/routes.dart';
 import 'package:e/screens/auth/login_screen.dart';
 import 'package:e/screens/buyer/Provider/cart_provider.dart';
 import 'package:e/screens/seller/provider/orderprovider.dart';
-
 import 'package:e/screens/seller/request_screen.dart';
 import 'package:e/screens/seller/seller_dashboard_screen.dart';
 import 'package:e/services/auth_service.dart';
 import 'package:e/utils/constants.dart';
+import 'package:e/utils/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,81 +36,21 @@ class EcommerceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Fresh Cart',
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          foregroundColor: Colors.white,
-        ),
-        // fontFamily: 'Roboto',
-        primaryColor: kPrimaryColor,
-        scaffoldBackgroundColor: kBackgroundColor,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: kPrimaryColor,
-          secondary: kSecondaryColor,
-          surface: kBackgroundColor,
-        ),
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: kTextColor,
-          ),
-          headlineMedium: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: kTextColor,
-          ),
-          bodyLarge: TextStyle(
-            fontSize: 16,
-            color: kTextColor,
-          ),
-          bodyMedium: TextStyle(
-            fontSize: 14,
-            color: kTextColorSecondary,
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: kPrimaryColor,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-            textStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: kBackgroundColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: kBorderColor),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: kBorderColor),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: kPrimaryColor, width: 2),
-          ),
-          labelStyle: const TextStyle(color: kTextColorSecondary),
-          hintStyle: const TextStyle(color: kTextColorSecondary),
-        ),
-        useMaterial3: true,
-      ),
-      // home: const SplashScreen(),
-      home: const SplashScreen(),
-      onGenerateRoute: RouteGenerator.generateRoute,
+    return ScreenUtilInit(
+        designSize: const Size(411, 890), // 👈 Your base device size
+        minTextAdapt: true,
+        builder: (context, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Fresh Cart',
+            theme: AppTheme.theme,
+            // home: const SplashScreen(),
+            home: const SplashScreen(),
+            onGenerateRoute: RouteGenerator.generateRoute,
 
-      // onGenerateRoute: RouteGenerator.generateRoute,
-    );
+            // onGenerateRoute: RouteGenerator.generateRoute,
+          );
+        });
   }
 }
 

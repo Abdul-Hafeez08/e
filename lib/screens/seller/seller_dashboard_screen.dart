@@ -1,7 +1,7 @@
 import 'package:e/models/product_model.dart';
 import 'package:e/models/shop_model.dart';
 import 'package:e/screens/auth/login_screen.dart';
-import 'package:e/screens/buyer/home_screen.dart';
+
 import 'package:e/screens/seller/orders.dart';
 import 'package:e/screens/seller/product_edit_screen.dart';
 import 'package:e/screens/seller/product_upload_screen.dart';
