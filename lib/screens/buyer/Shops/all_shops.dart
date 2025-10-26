@@ -1,5 +1,7 @@
+import 'dart:io';
+
 import 'package:e/models/product_model.dart';
-import 'package:e/screens/buyer/Provider/cart_provider.dart';
+import 'package:e/provider/cart_provider.dart';
 import 'package:e/services/firestore_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/widgets/product_card.dart';
@@ -15,88 +17,133 @@ class AllShopsScreen extends StatelessWidget {
 
   final FirestoreService _firestoreService = FirestoreService();
 
+  Future<bool> _showExitDialog(BuildContext context) async {
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App?'),
+        content: const Text('Do you really want to close the app?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+    return shouldExit ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'All Shops',
-          style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+    return PopScope(
+      canPop: false, // prevent default pop
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          final shouldExit = await _showExitDialog(context);
+          if (shouldExit) {
+            exit(0); // Close the app
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'All Shops',
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF1B5E20), // dark green
+                  // medium green
+                  Color(0xFF66BB6A),
+                  Color(0xFF2E7D32), // light green
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+            ),
+          ),
+          backgroundColor: kPrimaryColor,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-        backgroundColor: kPrimaryColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestoreService.getAllShops(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(color: kPrimaryColor));
-          }
-          if (snapshot.hasError) {
-            return Center(
-                child: Text('Error: ${snapshot.error}',
-                    style: const TextStyle(color: kErrorColor)));
-          }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-                child: Text('No shops available',
-                    style: TextStyle(color: kTextColorSecondary)));
-          }
+        body: StreamBuilder<QuerySnapshot>(
+          stream: _firestoreService.getAllShops(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(color: kPrimaryColor));
+            }
+            if (snapshot.hasError) {
+              return Center(
+                  child: Text('Error: ${snapshot.error}',
+                      style: const TextStyle(color: kErrorColor)));
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(
+                  child: Text('No shops available',
+                      style: TextStyle(color: kTextColorSecondary)));
+            }
 
-          final shops = snapshot.data!.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return {
-              'name': data['name'] ?? 'Unknown Shop',
-              'sellerId': doc.id, // Assuming sellerId is the document ID
-            };
-          }).toList();
+            final shops = snapshot.data!.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return {
+                'name': data['name'] ?? 'Unknown Shop',
+                'sellerId': data['sellerId'],
+              };
+            }).toList();
 
-          return AnimationLimiter(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(kDefaultPadding),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: kDefaultPadding,
-                mainAxisSpacing: kDefaultPadding,
-                childAspectRatio: 1.5,
-              ),
-              itemCount: shops.length,
-              itemBuilder: (context, index) {
-                final shop = shops[index];
-                return AnimationConfiguration.staggeredGrid(
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  columnCount: 2,
-                  child: ScaleAnimation(
-                    child: FadeInAnimation(
-                      child: ShopCard(
-                        name: shop['name'],
-                        sellerId: shop['sellerId'],
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ShopProductsScreen(
-                                  sellerId: shop['sellerId']),
-                            ),
-                          );
-                        },
+            return AnimationLimiter(
+              child: GridView.builder(
+                padding: const EdgeInsets.all(kDefaultPadding),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: kDefaultPadding,
+                  mainAxisSpacing: kDefaultPadding,
+                  childAspectRatio: 1.5,
+                ),
+                itemCount: shops.length,
+                itemBuilder: (context, index) {
+                  final shop = shops[index];
+                  return AnimationConfiguration.staggeredGrid(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    columnCount: 2,
+                    child: ScaleAnimation(
+                      child: FadeInAnimation(
+                        child: ShopCard(
+                          name: shop['name'],
+                          sellerId: shop['sellerId'],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ShopProductsScreen(
+                                    sellerId: shop['sellerId']),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -168,8 +215,21 @@ class ShopProductsScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
         ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF1B5E20), // dark green
+                // medium green
+                Color(0xFF66BB6A),
+                Color(0xFF2E7D32), // light green
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         backgroundColor: kPrimaryColor,
-        elevation: 0,
         actions: [
           Consumer<CartProvider>(
             builder: (context, value, child) {

@@ -3,7 +3,7 @@ import 'package:e/models/product_model.dart';
 import 'package:e/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:e/screens/buyer/Provider/cart_provider.dart';
+import 'package:e/provider/cart_provider.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;

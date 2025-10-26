@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e/models/product_model.dart';
-import 'package:e/screens/buyer/Provider/cart_provider.dart';
+import 'package:e/provider/cart_provider.dart';
+import 'package:e/provider/wishlist_provider.dart';
 import 'package:e/screens/buyer/cart/cart_screen.dart';
 import 'package:e/utils/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +26,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context, listen: false);
+    final wishlist = Provider.of<WishlistProvider>(context);
+    final isFavorite =
+        wishlist.items.any((item) => item.id == widget.product.id);
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -76,6 +81,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 fontWeight: FontWeight.bold,
               ),
         ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF1B5E20), // dark green
+                // medium green
+                Color(0xFF66BB6A),
+                Color(0xFF2E7D32), // light green
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         backgroundColor: kPrimaryColor,
         elevation: 0,
         leading: IconButton(
@@ -103,12 +122,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         height: 350,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          // image: DecorationImage(
-                          //   image: NetworkImage(widget.product.imageUrl),
-                          //   fit: BoxFit.cover,
-                          //   onError: (exception, stackTrace) =>
-                          //       const NetworkImage(kDefaultImageUrl),
-                          // ),
                           image: DecorationImage(
                             image: CachedNetworkImageProvider(
                               widget.product.imageUrl,
@@ -144,6 +157,36 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             kPrimaryColor.withOpacity(0.2),
                           ],
                         ),
+                      ),
+                    ),
+                    // Heart Icon Button
+                    Positioned(
+                      bottom: 10,
+                      right: 10,
+                      child: IconButton(
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.grey,
+                          size: 30,
+                        ),
+                        onPressed: () async {
+                          if (isFavorite) {
+                            await wishlist.removeItem(widget.product.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      '${widget.product.name} removed from wishlist!')),
+                            );
+                          } else {
+                            await wishlist.addItem(widget.product);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      '${widget.product.name} added to wishlist!')),
+                            );
+                          }
+                          setState(() {}); // Refresh the icon state
+                        },
                       ),
                     ),
                   ],
@@ -182,8 +225,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   // Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: kPrimaryColor,
+                                  backgroundColor: kPrimaryColor,
+                                  foregroundColor: Colors.white,
                                   side: const BorderSide(color: kPrimaryColor),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
@@ -195,6 +238,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                         ],
+                      ),
+
+                      SizedBox(
+                        height: 10,
                       ),
                       // Product Name
                       Text(

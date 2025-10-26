@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e/screens/buyer/single_order.dart';
 import 'package:e/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,21 @@ class OrderHistoryScreen extends StatelessWidget {
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
         title: const Text('Order History'),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF1B5E20), // dark green
+                // medium green
+                Color(0xFF66BB6A),
+                Color(0xFF2E7D32), // light green
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         backgroundColor: kPrimaryColor,
-        elevation: 0,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -155,12 +169,6 @@ class OrderHistoryScreen extends StatelessWidget {
                                     OrderDetailScreen(orderId: orderId),
                               ),
                             );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content:
-                                    Text('Opening details of Order #$orderId'),
-                              ),
-                            );
                           },
                         ),
                       ),
@@ -171,30 +179,6 @@ class OrderHistoryScreen extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class OrderDetailScreen extends StatelessWidget {
-  final String orderId;
-
-  const OrderDetailScreen({super.key, required this.orderId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        title: Text('Order #$orderId'),
-        backgroundColor: kPrimaryColor,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Text(
-          'Details for Order #$orderId (To be implemented)',
-          style: const TextStyle(fontSize: 18, color: kTextColor),
-        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 // Yeh widget bottom navigation state ko manage karega
-import 'package:e/screens/buyer/all_Shops/all_shops.dart';
+import 'package:e/screens/buyer/Shops/all_shops.dart';
 import 'package:e/screens/buyer/home_screen.dart';
+import 'package:e/screens/buyer/wishlist.dart';
 
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class _BottomBarState extends State<BottomBar> {
     HomeScreen(),
     AllShopsScreen(),
     Text('Messages Page'),
-    Text('Favorite'),
+    WishlistScreen(),
   ];
 
   // Tab change hone par yeh function call hoga

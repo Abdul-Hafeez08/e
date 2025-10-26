@@ -1,4 +1,4 @@
-import 'package:e/Widets/Bottom_Bar.dart';
+import 'package:e/widgets/Bottom_Bar.dart';
 import 'package:e/screens/admin/request_approval_screen.dart';
 import 'package:e/screens/auth/role_selection_screen.dart';
 import 'package:e/screens/auth/signup_screen.dart';

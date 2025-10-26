@@ -1,4 +1,4 @@
-import 'package:e/screens/buyer/Provider/cart_provider.dart';
+import 'package:e/provider/cart_provider.dart';
 import 'package:e/screens/buyer/cart/checkout_screen.dart';
 import 'package:e/utils/constants.dart';
 import 'package:flutter/material.dart';

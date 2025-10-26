@@ -271,7 +271,7 @@
 // }
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e/screens/seller/provider/orderprovider.dart';
+import 'package:e/provider/orderprovider.dart';
 import 'package:e/utils/constants.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -715,29 +715,29 @@ class _StatusOrdersScreenState extends State<StatusOrdersScreen> {
   }
 }
 
-class OrderDetailScreen extends StatelessWidget {
-  final String orderId;
+// class OrderDetailScreen extends StatelessWidget {
+//   final String orderId;
 
-  const OrderDetailScreen({super.key, required this.orderId});
+//   const OrderDetailScreen({super.key, required this.orderId});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        title: Text('Order #$orderId'),
-        backgroundColor: kPrimaryColor,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Text(
-          'Details for Order #$orderId (To be implemented)',
-          style: const TextStyle(fontSize: 18, color: kTextColor),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: kBackgroundColor,
+//       appBar: AppBar(
+//         title: Text('Order #$orderId'),
+//         backgroundColor: kPrimaryColor,
+//         elevation: 0,
+//       ),
+//       body: Center(
+//         child: Text(
+//           'Details for Order #$orderId (To be implemented)',
+//           style: const TextStyle(fontSize: 18, color: kTextColor),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 Future<void> updateOrderStatus(
     BuildContext context, String orderId, String newStatus) async {

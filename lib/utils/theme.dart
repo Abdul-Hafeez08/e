@@ -48,6 +48,19 @@ class AppTheme {
         ),
       ),
     ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Colors.transparent, // Use gradient instead
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 6.0,
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+      actionTextColor: Color(0xFF66BB6A), // Medium green for action text
+      // Custom gradient background
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: kBackgroundColor,

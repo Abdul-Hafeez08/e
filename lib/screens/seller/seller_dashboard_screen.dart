@@ -5,7 +5,7 @@ import 'package:e/screens/auth/login_screen.dart';
 import 'package:e/screens/seller/orders.dart';
 import 'package:e/screens/seller/product_edit_screen.dart';
 import 'package:e/screens/seller/product_upload_screen.dart';
-import 'package:e/screens/seller/provider/orderprovider.dart';
+import 'package:e/provider/orderprovider.dart';
 import 'package:e/services/firestore_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/widgets/product_card.dart';
