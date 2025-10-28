@@ -271,18 +271,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                           Row(
                             children: [
-                              const Icon(Icons.star,
-                                  color: Colors.amber, size: 20),
-                              const SizedBox(width: kSmallPadding / 2),
-                              Text(
-                                '4.5', // Placeholder for future rating
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      color: kTextColorSecondary,
-                                    ),
-                              ),
+                              // const Icon(Icons.star,
+                              //     color: Colors.amber, size: 20),
+                              // const SizedBox(width: kSmallPadding / 2),
+                              // Text(
+                              //   '4.5', // Placeholder for future rating
+                              //   style: Theme.of(context)
+                              //       .textTheme
+                              //       .bodyLarge!
+                              //       .copyWith(
+                              //         color: kTextColorSecondary,
+                              //       ),
+                              // ),
                             ],
                           ),
                         ],
@@ -345,11 +345,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: kDefaultPadding),
+
                       // Shop Name and Icons
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: kDefaultPadding),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: kSmallPadding),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -359,7 +359,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     color: kTextColorSecondary),
                                 const SizedBox(width: kSmallPadding),
                                 Text(
-                                  'Shop: ${widget.product.sellerName}',
+                                  '${widget.product.sellerName}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineMedium!
@@ -374,7 +374,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.location_on,
+                                  icon: const Icon(Icons.sms,
                                       color: kPrimaryColor),
                                   onPressed: () {
                                     // Placeholder for Visit Shop action
@@ -384,10 +384,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                               'Visit Shop feature coming soon!')),
                                     );
                                   },
-                                  tooltip: 'Visit Shop',
+                                  tooltip: 'Chat with Seller',
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.chat,
+                                  icon: const Icon(Icons.arrow_forward,
                                       color: kPrimaryColor),
                                   onPressed: () {
                                     // Placeholder for Chat action
@@ -397,7 +397,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                               'Chat feature coming soon!')),
                                     );
                                   },
-                                  tooltip: 'Chat with Seller',
+                                  tooltip: 'Visit Shop',
                                 ),
                               ],
                             ),

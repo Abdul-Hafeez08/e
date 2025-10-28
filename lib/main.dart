@@ -1,3 +1,4 @@
+import 'package:e/test.dart';
 import 'package:e/widgets/Bottom_Bar.dart';
 import 'package:e/provider/wishlist_provider.dart';
 import 'package:e/routes.dart';
@@ -49,6 +50,7 @@ class EcommerceApp extends StatelessWidget {
             title: 'Fresh Cart',
             theme: AppTheme.theme,
             home: const SplashScreen(),
+            // home: ContainerColumn(),
             onGenerateRoute: RouteGenerator.generateRoute,
           );
         });
