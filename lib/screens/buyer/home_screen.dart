@@ -25,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirestoreService _firestoreService = FirestoreService();
-  String _selectedCategory = kProductCategories.first;
+  //String _selectedCategory = kProductCategories.first;
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Category Scroller
 
           Container(
-            height: 110, // increased for image + text
+            height: 100.h, // increased for image + text
             padding: const EdgeInsets.symmetric(
               vertical: kSmallPadding,
               horizontal: kDefaultPadding,
@@ -174,9 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.only(right: kSmallPadding),
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _selectedCategory = category;
-                      });
+                      // setState(() {
+                      //   _selectedCategory = category;
+                      // });
                       Navigator.pushNamed(
                         context,
                         ProductListScreen.routeName,
@@ -186,15 +186,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
-                      width: 100, // slightly wider for long text
+                      width: 80.w, // slightly wider for long text
                       padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 8),
+                          vertical: 5, horizontal: 8),
                       decoration: BoxDecoration(
-                        color: isSelected ? kPrimaryColor : Colors.white,
+                        color: Colors.white,
                         borderRadius:
                             BorderRadius.circular(kDefaultBorderRadius),
                         border: Border.all(
-                          color: isSelected ? kPrimaryColor : kBorderColor,
+                          color: kBorderColor,
                         ),
                         boxShadow: [
                           // if (isSelected)
@@ -211,8 +211,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           // 🖼️ Image
                           Image.asset(
                             'assets/${categoryimage.toLowerCase()}.png',
-                            height: 40,
-                            width: 40,
+                            height: 40.h,
+                            width: 40.w,
                             fit: BoxFit.contain,
                           ),
                           const SizedBox(height: 8),
@@ -224,10 +224,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 12.sp,
-                              color: isSelected ? Colors.white : kTextColor,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
+                              color: kTextColor,
+                              fontWeight: FontWeight.normal,
                             ),
                           ),
                         ],

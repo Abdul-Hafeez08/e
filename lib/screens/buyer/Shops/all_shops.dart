@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:e/models/product_model.dart';
 import 'package:e/provider/cart_provider.dart';
+import 'package:e/screens/buyer/product_detail_screen.dart';
 import 'package:e/services/firestore_service.dart';
 import 'package:e/utils/constants.dart';
 import 'package:e/widgets/product_card.dart';
@@ -314,7 +315,13 @@ class ShopProductsScreen extends StatelessWidget {
                       child: ProductCard(
                         product: product,
                         onTap: () {
-                          // Navigate to product detail if needed
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProductDetailScreen(product: product),
+                            ),
+                          );
                         },
                       ),
                     ),

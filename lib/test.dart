@@ -1,79 +1,109 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-// class ContainerColumn extends StatelessWidget {
-//   const ContainerColumn({super.key});
+class ActiveInputExample extends StatefulWidget {
+  const ActiveInputExample({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0), // Padding around the column
-//         child: Center(
-//           child: Column(
-//             mainAxisAlignment:
-//                 MainAxisAlignment.spaceEvenly, // Evenly space containers
-//             children: [
-//               // Container 1: Gradient Border (Blue to Cyan)
-//               _buildGradientBorderContainer(
-//                 gradientColors: [Colors.blue, Colors.cyan],
-//                 label: 'Gradient Border 1',
-//               ),
-//               // Container 2: Gradient Border (Red to Pink)
-//               _buildGradientBorderContainer(
-//                 gradientColors: [Colors.red, Colors.pink],
-//                 label: 'Gradient Border 2',
-//               ),
-//               // Container 3: Gradient Border (Green to Lime)
-//               _buildGradientBorderContainer(
-//                 gradientColors: [Colors.green, Colors.lime],
-//                 label: 'Gradient Border 3',
-//               ),
-//               // Container 4: Gradient Border (Purple to Indigo)
-//               _buildGradientBorderContainer(
-//                 gradientColors: [Colors.purple, Colors.indigo],
-//                 label: 'Gradient Border 4',
-//               ),
-//               // Container 5: Gradient Border (Orange to Yellow)
-//               _buildGradientBorderContainer(
-//                 gradientColors: [Colors.orange, Colors.yellow],
-//                 label: 'Gradient Border 5',
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
+  @override
+  State<ActiveInputExample> createState() => _ActiveInputExampleState();
+}
 
-//   // Helper method to build a container with a gradient border
-//   Widget _buildGradientBorderContainer({
-//     required List<Color> gradientColors,
-//     required String label,
-//   }) {
-//     return Container(
-//       height: 80,
-//       width: 200,
-//       decoration: BoxDecoration(
-//         borderRadius: BorderRadius.circular(12), // Rounded corners
-//         gradient: LinearGradient(
-//           colors: gradientColors, // Gradient colors for the border
-//           begin: Alignment.topLeft,
-//           end: Alignment.bottomRight,
-//         ),
-//       ),
-//       child: Container(
-//         margin:
-//             const EdgeInsets.all(3), // Margin creates the "border" thickness
-//         decoration: BoxDecoration(
-//           color: Colors.white.withOpacity(0.1), // Inner container background
-//           borderRadius: BorderRadius.circular(10), // Slightly smaller radius
-//         ),
-//         child: Center(
-//             child: Text(
-//           label,
-//           style: TextStyle(color: Colors.white, fontSize: 20),
-//         )),
-//       ),
-//     );
-//   }
-// }
+class _ActiveInputExampleState extends State<ActiveInputExample> {
+  // FocusNodes to detect focus changes
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocus.addListener(() => setState(() {}));
+    _passwordFocus.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.blue.shade50,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Email TextField
+                TextField(
+                  focusNode: _emailFocus,
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
+                      color: _emailFocus.hasFocus ? Colors.blue : Colors.grey,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 1),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Password TextField
+                TextField(
+                  focusNode: _passwordFocus,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    prefixIcon: Icon(
+                      Icons.lock_outline,
+                      color:
+                          _passwordFocus.hasFocus ? Colors.blue : Colors.grey,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 1),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget button(VoidCallback onclick, String label, Icon icon) {
+    return ElevatedButton.icon(
+      onPressed: onclick,
+      label: Text(label),
+      icon: icon,
+    );
+  }
+}

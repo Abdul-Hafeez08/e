@@ -35,7 +35,7 @@ class Validators {
     return null;
   }
 
-  // Price validation (for product price)
+  // Price validation 
   static String? validatePrice(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a price';
@@ -58,7 +58,7 @@ class Validators {
     return null;
   }
 
-  // Description validation (for product or shop description)
+  // Description validation 
   static String? validateDescription(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a description';

@@ -49,8 +49,8 @@ class EcommerceApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Fresh Cart',
             theme: AppTheme.theme,
-            home: const SplashScreen(),
-            // home: ContainerColumn(),
+            // home: const SplashScreen(),
+            home: ActiveInputExample(),
             onGenerateRoute: RouteGenerator.generateRoute,
           );
         });

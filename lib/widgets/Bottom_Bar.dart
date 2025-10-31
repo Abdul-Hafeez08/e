@@ -13,10 +13,10 @@ class BottomBar extends StatefulWidget {
 }
 
 class _BottomBarState extends State<BottomBar> {
-  // Selected tab index
+ 
   int _selectedIndex = 0;
 
-  // Pages ki list (Aap yahan apne asli screens daal sakte hain)
+  
   final List<Widget> _pages = <Widget>[
     HomeScreen(),
     AllShopsScreen(),
@@ -24,7 +24,7 @@ class _BottomBarState extends State<BottomBar> {
     WishlistScreen(),
   ];
 
-  // Tab change hone par yeh function call hoga
+  
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -34,12 +34,12 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Jo bhi page select hoga, woh yahan dikhega
+      
       body: Center(child: _pages.elementAt(_selectedIndex)),
-      // Bottom Navigation Bar
+      
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          // Thoda sa shadow dene ke liye
+          
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
@@ -53,14 +53,14 @@ class _BottomBarState extends State<BottomBar> {
           // Selected item ka index
 
           currentIndex: _selectedIndex,
-          // Item press hone par function call karna
+          
           onTap: _onItemTapped,
-          // Background color
+          
           backgroundColor: Colors.white,
-          // Item style
-          type: BottomNavigationBarType.fixed, // Saare items hamesha dikhenge
-          selectedItemColor: Colors.green, // Selected item ka color
-          unselectedItemColor: Colors.grey.shade600, // Unselected item ka color
+          
+          type: BottomNavigationBarType.fixed, 
+          selectedItemColor: Colors.green, 
+          unselectedItemColor: Colors.grey.shade600, 
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 12,
@@ -77,7 +77,7 @@ class _BottomBarState extends State<BottomBar> {
             ),
             // 3. Cart
 
-            // 4. Messages (Aapki request ke mutabik)
+            
             BottomNavigationBarItem(
               icon: Icon(Icons.chat_bubble_outline),
               label: 'Messages',
